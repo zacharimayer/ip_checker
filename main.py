@@ -1,7 +1,3 @@
-import socket
-import csv
-import requests
-
 # This script first tries to extract the IP address and port from each row.
 # If the port field is empty, it assumes the port is 80.
 # It then attempts to get the IP address from the URL using gethostbyname(),
@@ -12,41 +8,32 @@ import requests
 # which indicates a successful response. The results are stored in a list,
 # and finally written to a CSV file named results.csv.
 
-results = []
+import socket
+import csv
+import urllib.request
 
-with open("ips.csv") as f:
-    reader = csv.reader(f)
-    for row in reader:
-        try:
-            ip, port = row
-        except ValueError:
-            continue
-
-        if not port:
-            port = 80
-
-        try:
-            ip = socket.gethostbyname(ip)
-        except socket.gaierror:
-            results.append([ip, port, False])
-            continue
-
-        try:
-            s = socket.create_connection((ip, int(port)), timeout=5)
-        except (socket.timeout, ConnectionRefusedError):
-            results.append([ip, port, False])
-        else:
-            s.close()
+output_file = 'output.csv'
+with open('ips.csv', 'r') as ips_file:
+    reader = csv.reader(ips_file)
+    headers = next(reader)
+    with open(output_file, 'w', newline='') as output_csv:
+        writer = csv.writer(output_csv)
+        writer.writerow(['IP/URL', 'PORT', 'WEBPAGE'])
+        for row in reader:
             try:
-                r = requests.get(f"http://{ip}:{port}")
-                if r.status_code == 200:
-                    results.append([ip, port, True])
+                ip, port = row
+                port = int(port) if port.isdigit() else 80
+                if '.' in ip:
+                    # IP address
+                    ip = socket.gethostbyname(ip)
                 else:
-                    results.append([ip, port, False])
+                    # URL
+                    ip = socket.gethostbyname(urllib.request.urlsplit(ip).hostname)
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(5)
+                result = sock.connect_ex((ip, port))
+                sock.close()
+                webpage = 'True' if result == 0 else 'False'
+                writer.writerow([ip, port, webpage])
             except:
-                results.append([ip, port, False])
-
-with open("results.csv", "w", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerow(["IP", "PORT", "RESOLVES"])
-    writer.writerows(results)
+                writer.writerow([ip, port, 'Error'])
