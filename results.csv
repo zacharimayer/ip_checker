@@ -1,0 +1,5 @@
+IP/URL,Port,HTTP Checked,HTTP Result,HTTPS Checked,HTTPS Result
+8.8.8.8,80,True,False,True,False
+8.8.8.8,80,True,False,True,False
+google.com,443,True,True,True,True
+google.com,80,True,True,True,True

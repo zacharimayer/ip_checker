@@ -9,11 +9,18 @@ If the connection is successful, it makes a GET request to the URL and checks if
  
 # Requirements
 
-Python 3
-requests
+Python 3, requests.
+
+To install requests: 
+```pip3 install request```
 
 # Instructions:
 
 In order to run this code, you will need a csv name ips.csv file with 2 columns:
 - IP addresses
 - Ports
+
+Place the ips.csv file into the ip_checker folder and run:
+``````
+python3 main.py
+``````
