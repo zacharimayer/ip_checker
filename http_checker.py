@@ -1,6 +1,7 @@
 import csv
 import socket
 import requests
+import webbrowser
 
 def check_ip(ip, port, protocol):
     try:
@@ -37,12 +38,21 @@ with open('ips.csv') as file:
                 print(f'Now checking IP: {ip_or_url}:{port}')
                 http_result = check_ip(ip_or_url, port, 'http')
                 https_result = check_ip(ip_or_url, port, 'https')
+                if http_result:
+                    webbrowser.open(f'http://{ip_or_url}:{port}')
+                if https_result:
+                    webbrowser.open(f'https://{ip_or_url}:{port}')
                 writer.writerow([ip_or_url, port, True, http_result, True, https_result])
                 print('Done.')
             else:
                 print(f'Now checking URL: {ip_or_url}:{port}')
                 http_result = check_url(f'http://{ip_or_url}', port)
                 https_result = check_url(f'https://{ip_or_url}', port)
+                if http_result:
+                    webbrowser.open(f'http://{ip_or_url}:{port}')
+                if https_result:
+                    webbrowser.open(f'https://{ip_or_url}:{port}')
                 writer.writerow([ip_or_url, port, True, http_result, True, https_result])
                 print('Done.')
 print('Process completed. Please see check results file for details.')
+
